@@ -171,12 +171,13 @@ export const SECTIONS: Section[] = [
   },
   {
     id: 'site', title: 'Общие настройки', table: 'site_settings', kind: 'single', publication: true,
+    note: 'Мессенджеры и поисковики читают эти данные из готовой страницы, поэтому после публикации они обновляются при ближайшей пересборке сайта — она идёт автоматически раз в час.',
     fields: [
       { key: 'site_name', label: 'Название сайта', type: 'text', required: true },
       { key: 'meta_title', label: 'Meta title', type: 'text' },
       { key: 'meta_description', label: 'Meta description', type: 'textarea' },
-      { key: 'og_image_id', label: 'Картинка для ссылок в соцсетях', type: 'image' },
-      { key: 'favicon_id', label: 'Favicon', type: 'image' },
+      { key: 'og_image_id', label: 'Картинка для ссылок в соцсетях', type: 'image', hint: 'Превью при отправке ссылки в Telegram, ВКонтакте и т. п. Горизонтальная, 1200×630 px, JPG или PNG.' },
+      { key: 'favicon_id', label: 'Favicon', type: 'image', hint: 'Иконка во вкладке браузера и в закладках. Квадратная PNG, 512×512 px.' },
     ],
   },
 ];

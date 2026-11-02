@@ -5,13 +5,28 @@ import '@fontsource/inter/500.css';
 import '@fontsource/inter/600.css';
 import '@fontsource/inter/700.css';
 import { content } from '@/data/seed';
+import { loadSiteMeta } from '@/data/siteMeta';
 import { themeBootScript, themesCss } from '@/features/theme/themes';
 import '@/styles/globals.css';
 
-export const metadata: Metadata = {
-  title: 'SYP',
-  description: 'SYP — цифровой мир бренда: мероприятия, билеты, галерея и мини-игра.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const m = await loadSiteMeta();
+  return {
+    title: m.title,
+    description: m.description,
+    applicationName: m.siteName,
+    openGraph: {
+      type: 'website',
+      locale: 'ru_RU',
+      siteName: m.siteName,
+      title: m.title,
+      description: m.description,
+      ...(m.ogImage ? { images: [m.ogImage] } : {}),
+    },
+    twitter: { card: m.ogImage ? 'summary_large_image' : 'summary', title: m.title, description: m.description, ...(m.ogImage ? { images: [m.ogImage.url] } : {}) },
+    ...(m.favicon ? { icons: { icon: [{ url: m.favicon.url, type: m.favicon.type }], apple: m.favicon.url } } : {}),
+  };
+}
 
 export const viewport: Viewport = {
   width: 'device-width',

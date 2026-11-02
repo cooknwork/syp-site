@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Hourly rebuild: picks up «Общие настройки» (title, description, social preview, favicon) and keeps the
+  # first paint fresh. Regular content does not need it — the site re-reads the database in the browser.
+  schedule:
+    - cron: '17 * * * *'
 
 permissions:
   contents: read
