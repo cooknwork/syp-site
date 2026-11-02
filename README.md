@@ -11,8 +11,8 @@
 
 ## Стек
 
-Next.js (App Router) · React · TypeScript · CSS Modules · Supabase (PostgreSQL, Storage, Auth) · своя простая админка.
-Хостинг для разработки — Vercel; хостинг для запуска (РФ) выбирается позже, код от этого не меняется.
+Next.js (App Router) · React · TypeScript · CSS · Supabase (PostgreSQL, Storage, Auth) · своя простая админка.
+Сборка — GitHub Actions; хостинг для запуска (РФ) выбирается позже, код от этого не меняется.
 
 ## Структура
 
