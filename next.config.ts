@@ -2,8 +2,12 @@ import type { NextConfig } from 'next';
 
 // Stages 2–4 run without a server: the site is exported as static files.
 // Stage 5 (admin + database) switches this to a server build.
+// On GitHub Pages the site lives under /syp-site, set by BASE_PATH in .github/workflows/pages.yml.
+const basePath = process.env.BASE_PATH || '';
+
 const nextConfig: NextConfig = {
   output: 'export',
+  basePath,
   trailingSlash: true,
   images: { unoptimized: true },
   eslint: { ignoreDuringBuilds: true },
