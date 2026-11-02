@@ -43,6 +43,7 @@ export class GameEngine {
   private raf = 0; private last = 0; private acc = 0; private hold = false; private time = 0; private landT = -1; private overAt = 0;
   private best = 0;
   private active = false;
+  private tune = { startSpeed: 1, maxSpeed: 2.3, gravity: 1, jumpForce: 1 };
   private readonly reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   constructor(private cv: HTMLCanvasElement, private cb: GameCallbacks) {
@@ -53,6 +54,12 @@ export class GameEngine {
   get score() { return Math.floor(this.dist / 10); }
 
   setTheme(tokens: string[]) { this.t = tokens; if (this.active) this.draw(); }
+
+  /** Speed, gravity and jump multipliers from the admin panel (clamped to safe ranges). */
+  setTuning(t: { startSpeed: number; maxSpeed: number; gravity: number; jumpForce: number }) {
+    const c = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v || lo));
+    this.tune = { startSpeed: c(t.startSpeed, 0.5, 2), maxSpeed: c(t.maxSpeed, 1, 4), gravity: c(t.gravity, 0.5, 2), jumpForce: c(t.jumpForce, 0.5, 2) };
+  }
 
   enter() {
     if (this.active) return;
@@ -109,7 +116,7 @@ export class GameEngine {
 
   private reset() {
     this.p = { x: Math.round(Math.max(18, this.W * 0.16)), y: this.ground, vy: 0, onGround: true };
-    this.obs = []; this.speed = this.base; this.dist = 0; this.nextGap = this.W * 0.7; this.time = 0; this.landT = -1;
+    this.obs = []; this.speed = this.base * this.tune.startSpeed; this.dist = 0; this.nextGap = this.W * 0.7; this.time = 0; this.landT = -1;
   }
 
   private building(layer: Layer, x: number): Building {
@@ -141,10 +148,10 @@ export class GameEngine {
 
   private step(dt: number) {
     this.time += dt;
-    this.speed = Math.min(this.base * 2.3, this.speed + this.base * 0.028 * dt);
+    this.speed = Math.min(this.base * Math.max(this.tune.maxSpeed, this.tune.startSpeed), this.speed + this.base * 0.028 * dt);
     this.dist += this.speed * dt;
     const p = this.p;
-    p.vy += (this.hold && p.vy < 0 ? 560 : 1150) * dt;
+    p.vy += (this.hold && p.vy < 0 ? 560 : 1150) * this.tune.gravity * dt;
     p.y += p.vy * dt;
     if (p.y >= this.ground) { if (!p.onGround) this.landT = this.time; p.y = this.ground; p.vy = 0; p.onGround = true; }
     if (!this.reduce) this.layers.forEach((l) => { l.off += this.speed * l.f * dt; this.fill(l); });
@@ -271,7 +278,7 @@ export class GameEngine {
 
   private jump() {
     if (this.state === 'menu' || (this.state === 'over' && performance.now() - this.overAt > 400)) { this.start(); return; }
-    if (this.state === 'run' && this.p.onGround) { this.p.vy = -290; this.p.onGround = false; }
+    if (this.state === 'run' && this.p.onGround) { this.p.vy = -290 * Math.sqrt(this.tune.jumpForce * this.tune.gravity); this.p.onGround = false; }
   }
 
   private onKeyDown = (e: KeyboardEvent) => {

@@ -96,5 +96,14 @@ export const content: SiteContent = {
     isVisible: true,
     title: 'SYP Run',
     description: 'Беги по ночному городу и перепрыгивай машины, барьеры и колонки.',
+    startSpeed: 1,
+    maxSpeed: 2.3,
+    gravity: 1,
+    jumpForce: 1,
   },
+  city: { brightness: 1, contrast: 1, glowIntensity: 1, texture: 0.2, animationSpeed: 1 },
+
+  gallery: { albums: [], items: [] },
+  home: { apps: [{ key: 'syp', visible: true }, { key: 'events', visible: true }, { key: 'gallery', visible: true }, { key: 'tickets', visible: true }] },
+  source: 'seed',
 };

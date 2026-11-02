@@ -33,13 +33,18 @@ function useClock() {
 }
 
 interface Props {
+  /** visibility and order from the admin panel (home_screen.apps) */
+  homeApps?: { key: string; visible: boolean }[];
   screenRef: RefObject<HTMLDivElement | null>;
   onOpen: (app: AppKey, from: HTMLElement) => void;
   onSecret: (from: HTMLElement) => void;
   children?: ReactNode; // the open app window
 }
 
-export function Phone({ screenRef, onOpen, onSecret, children }: Props) {
+export function Phone({ homeApps, screenRef, onOpen, onSecret, children }: Props) {
+  const apps = homeApps?.length
+    ? homeApps.filter((a) => a.visible).map((a) => HOME_APPS.find((h) => h.key === a.key)).filter((a): a is (typeof HOME_APPS)[number] => !!a)
+    : HOME_APPS;
   const time = useClock();
   const taps = useRef<number[]>([]);
   const [ping, setPing] = useState(0);
@@ -70,7 +75,7 @@ export function Phone({ screenRef, onOpen, onSecret, children }: Props) {
             </button>
           </div>
           <nav className="apps" aria-label="Приложения">
-            {HOME_APPS.map((a) => (
+            {apps.map((a) => (
               <button key={a.key} className="app" onClick={(e) => onOpen(a.key, e.currentTarget)}>
                 <span className={`tile ${a.tone}`}><Icon name={a.icon} /></span>
                 <span>{a.label}</span>

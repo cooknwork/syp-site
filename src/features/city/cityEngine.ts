@@ -59,6 +59,8 @@ export class CityEngine {
   private last = 0;
   private flicker: ReturnType<typeof setInterval> | null = null;
   private running = false;
+  private glowK = 1;
+  private speedK = 1;
   private readonly reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   constructor(private city: HTMLCanvasElement, private life: HTMLCanvasElement, private cb: CityCallbacks) {
@@ -73,6 +75,13 @@ export class CityEngine {
     this.t = tokens;
     if (!this.s) this.layout();
     else { this.drawCity(); this.drawLife(); }
+  }
+
+  /** Glow intensity and animation speed from the admin panel; brightness/contrast are CSS filters on the canvases. */
+  setTuning(glow: number, speed: number) {
+    this.glowK = Math.max(0, Math.min(2, glow));
+    this.speedK = Math.max(0, Math.min(2, speed));
+    if (this.s) this.drawCity();
   }
 
   setEvent(ev: BillboardEvent | null) {
@@ -190,7 +199,7 @@ export class CityEngine {
     cx.fillStyle = g; cx.fillRect(0, 0, s.W, s.H);
     ([[0.15, 0.5, t[7], 0.38], [0.85, 0.42, t[3], 0.55], [0.5, 0.78, t[8], 0.22], [0.7, 0.15, t[6], 0.08]] as [number, number, string, number][]).forEach(([x, y, c, a]) => {
       const r = Math.max(s.W, s.H) * 0.45, rg = cx.createRadialGradient(s.W * x, s.H * y, 0, s.W * x, s.H * y, r);
-      rg.addColorStop(0, hex2(c, a)); rg.addColorStop(1, hex2(c, 0)); cx.fillStyle = rg; cx.fillRect(0, 0, s.W, s.H);
+      rg.addColorStop(0, hex2(c, Math.min(1, a * this.glowK))); rg.addColorStop(1, hex2(c, 0)); cx.fillStyle = rg; cx.fillRect(0, 0, s.W, s.H);
     });
 
     lx.clearRect(0, 0, s.w, s.h);
@@ -239,7 +248,7 @@ export class CityEngine {
 
     const glow = (x: number, y: number, r: number, c: string, a: number) => {
       const rg = cx.createRadialGradient(x, y, 0, x, y, r);
-      rg.addColorStop(0, hex2(c, a)); rg.addColorStop(1, hex2(c, 0)); cx.fillStyle = rg; cx.fillRect(x - r, y - r, r * 2, r * 2);
+      rg.addColorStop(0, hex2(c, Math.min(1, a * this.glowK))); rg.addColorStop(1, hex2(c, 0)); cx.fillStyle = rg; cx.fillRect(x - r, y - r, r * 2, r * 2);
     };
     cx.globalCompositeOperation = 'lighter';
     s.signs.forEach((sg) => glow((sg.x + 0.5) * P, (sg.y + sg.len / 2) * P, sg.len * P * 1.1, t[sg.c], 0.32));
@@ -416,7 +425,7 @@ export class CityEngine {
     if (now - this.last < 33) return;
     const dt = Math.min(0.1, (now - this.last) / 1000);
     this.last = now;
-    this.update(dt);
+    this.update(dt * this.speedK);
     this.drawLife();
   };
 

@@ -5,6 +5,7 @@ import { GameEngine, type GameState } from './gameEngine';
 
 interface Props {
   active: boolean;
+  tuning: { startSpeed: number; maxSpeed: number; gravity: number; jumpForce: number };
   tokens: string[];
   title: string;
   description: string;
@@ -13,7 +14,7 @@ interface Props {
 
 const pad = (n: number) => String(n).padStart(5, '0');
 
-export function GameLayer({ active, tokens, title, description, onExit }: Props) {
+export function GameLayer({ active, tuning, tokens, title, description, onExit }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const engine = useRef<GameEngine | null>(null);
   const primary = useRef<HTMLButtonElement>(null);
@@ -32,6 +33,7 @@ export function GameLayer({ active, tokens, title, description, onExit }: Props)
   }, []);
 
   useEffect(() => { engine.current?.setTheme(tokens); }, [tokens]);
+  useEffect(() => { engine.current?.setTuning(tuning); }, [tuning]);
   useEffect(() => {
     const e = engine.current;
     if (!e) return;

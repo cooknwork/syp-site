@@ -1,11 +1,13 @@
 'use client';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { SiteContent } from '@/data/types';
+import { loadContent } from '@/data/remote';
+import { supabase } from '@/lib/supabase';
 import { CityBackground } from '@/features/city/CityBackground';
 import type { BillboardEvent } from '@/features/city/cityEngine';
 import { GameLayer } from '@/features/game/GameLayer';
 import { Phone, type AppKey } from '@/features/phone/Phone';
-import { STORAGE_KEY, tokenList } from '@/features/theme/themes';
+import { STORAGE_KEY, themesCss, tokenList } from '@/features/theme/themes';
 import { AppWindow } from '@/features/window/AppWindow';
 import { EventsApp } from '@/features/apps/EventsApp';
 import { GalleryApp } from '@/features/apps/GalleryApp';
@@ -23,7 +25,33 @@ const APP_TITLES: Record<AppKey, string> = {
 };
 const GAME_ROUTE = 'game';
 
-export function SypWorld({ content }: { content: SiteContent }) {
+export function SypWorld({ content: initial }: { content: SiteContent }) {
+  // ---- content: from the build, then refreshed from the database in the browser ----
+  const [content, setContent] = useState(initial);
+  const [preview, setPreview] = useState(false);
+  useEffect(() => {
+    const isPreview = new URLSearchParams(location.search).has('preview');
+    setPreview(isPreview);
+    let alive = true;
+    (async () => {
+      try {
+        if (isPreview) await supabase().auth.getSession(); // admin session from /admin, same site
+        const fresh = await loadContent(supabase(), { preview: isPreview });
+        if (alive) setContent(fresh);
+      } catch {
+        /* offline or blocked: keep what the page was built with */
+      }
+    })();
+    return () => { alive = false; };
+  }, []);
+  useEffect(() => {
+    document.documentElement.style.setProperty('--grain', String(content.city.texture));
+  }, [content.city.texture]);
+  useEffect(() => {
+    const el = document.getElementById('syp-themes');
+    if (el && content.source === 'db') el.textContent = themesCss(content.themes);
+  }, [content]);
+
   const { themes, events, legal } = content;
   const defaultTheme = themes.find((t) => t.isDefault) ?? themes[0];
   const legalTitles = useMemo(() => Object.fromEntries(legal.map((d) => [d.slug, d.title])), [legal]);
@@ -117,7 +145,7 @@ export function SypWorld({ content }: { content: SiteContent }) {
       case 'syp': return <SYPApp brand={content.brand} />;
       case 'events': return <EventsApp events={events} initialSlug={ev} />;
       case 'tickets': return <TicketsApp events={events} onOpenEvent={openEvent} />;
-      case 'gallery': return <GalleryApp />;
+      case 'gallery': return <GalleryApp albums={content.gallery.albums} items={content.gallery.items} />;
       case 'messages': return <MessagesApp contacts={content.contacts} />;
       case 'settings':
         return (
@@ -136,11 +164,12 @@ export function SypWorld({ content }: { content: SiteContent }) {
 
   return (
     <>
-      <CityBackground tokens={tokens} event={bbEvent} paused={playing} onBrand={() => go('syp')} onEvent={openEvent} />
-      <GameLayer active={playing} tokens={tokens} title={content.game.title} description={content.game.description} onExit={() => go('')} />
+      <CityBackground tokens={tokens} tuning={content.city} event={bbEvent} paused={playing} onBrand={() => go('syp')} onEvent={openEvent} />
+      <GameLayer active={playing} tuning={content.game} tokens={tokens} title={content.game.title} description={content.game.description} onExit={() => go('')} />
+      {preview && <div className="preview-banner">Предпросмотр: видны черновики</div>}
       {footerDocs.length > 0 && <Footer docs={footerDocs} onOpen={(slug) => go(slug)} />}
       <main className="stage">
-        <Phone screenRef={screenRef} onOpen={(app, el) => go(app, el)} onSecret={(el) => content.game.isVisible && go(GAME_ROUTE, el)}>
+        <Phone screenRef={screenRef} homeApps={content.home.apps} onOpen={(app, el) => go(app, el)} onSecret={(el) => content.game.isVisible && go(GAME_ROUTE, el)}>
           {win && (
             <AppWindow key={win.key} title={titleOf(win.app) ?? ''} closing={closing} origin={win.origin} onClose={() => go('')}>
               {renderApp(win.app, win.event)}

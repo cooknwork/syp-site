@@ -83,6 +83,51 @@ export interface GameSettings {
   isVisible: boolean;
   title: string;
   description: string;
+  /** multipliers from the admin panel, 1 = as designed */
+  startSpeed: number;
+  maxSpeed: number;
+  gravity: number;
+  jumpForce: number;
+}
+
+export interface CitySettings {
+  brightness: number;
+  contrast: number;
+  glowIntensity: number;
+  texture: number;
+  animationSpeed: number;
+}
+
+export interface MediaRef {
+  id: string;
+  url: string;
+  kind: 'image' | 'video' | 'svg';
+  width: number | null;
+  height: number | null;
+  /** smaller WebP copy for lists and previews, if one was made on upload */
+  thumbUrl: string | null;
+}
+
+export interface GalleryAlbum {
+  id: string;
+  slug: string;
+  title: string;
+  cover: MediaRef | null;
+  sortOrder: number;
+}
+
+export interface GalleryItem {
+  id: string;
+  albumId: string | null;
+  media: MediaRef;
+  caption: string | null;
+  takenAt: string | null;
+  sortOrder: number;
+}
+
+export interface HomeScreen {
+  /** visible home-screen apps in order; the Dock is fixed */
+  apps: { key: string; visible: boolean }[];
 }
 
 export interface SiteContent {
@@ -92,4 +137,9 @@ export interface SiteContent {
   brand: Brand;
   legal: LegalDocument[];
   game: GameSettings;
+  gallery: { albums: GalleryAlbum[]; items: GalleryItem[] };
+  home: HomeScreen;
+  city: CitySettings;
+  /** 'seed' — built-in starting content; 'db' — loaded from the database */
+  source: 'seed' | 'db';
 }

@@ -4,13 +4,14 @@ import { CityEngine, type BillboardEvent } from './cityEngine';
 
 interface Props {
   tokens: string[];
+  tuning: { brightness: number; contrast: number; glowIntensity: number; animationSpeed: number };
   event: BillboardEvent | null;
   paused: boolean;
   onBrand: () => void;
   onEvent: (slug: string) => void;
 }
 
-export function CityBackground({ tokens, event, paused, onBrand, onEvent }: Props) {
+export function CityBackground({ tokens, tuning, event, paused, onBrand, onEvent }: Props) {
   const cityRef = useRef<HTMLCanvasElement>(null);
   const lifeRef = useRef<HTMLCanvasElement>(null);
   const engine = useRef<CityEngine | null>(null);
@@ -36,6 +37,8 @@ export function CityBackground({ tokens, event, paused, onBrand, onEvent }: Prop
   }, []);
 
   useEffect(() => { engine.current?.setTheme(tokens); }, [tokens]);
+  useEffect(() => { engine.current?.setTuning(tuning.glowIntensity, tuning.animationSpeed); }, [tuning.glowIntensity, tuning.animationSpeed]);
+  const filter = tuning.brightness !== 1 || tuning.contrast !== 1 ? `brightness(${tuning.brightness}) contrast(${tuning.contrast})` : undefined;
   useEffect(() => { const e = engine.current; if (!e) return; e.setEvent(event); }, [event]);
   useEffect(() => {
     const e = engine.current;
@@ -45,8 +48,8 @@ export function CityBackground({ tokens, event, paused, onBrand, onEvent }: Prop
 
   return (
     <>
-      <canvas id="city" ref={cityRef} aria-hidden="true" />
-      <canvas id="life" ref={lifeRef} aria-hidden="true" />
+      <canvas id="city" ref={cityRef} aria-hidden="true" style={{ filter }} />
+      <canvas id="life" ref={lifeRef} aria-hidden="true" style={{ filter }} />
     </>
   );
 }
