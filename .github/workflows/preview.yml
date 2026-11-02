@@ -27,6 +27,10 @@ jobs:
       - name: Install
         run: npm install --no-audit --no-fund 2>&1 | tee install.log
 
+      - name: Check Supabase
+        continue-on-error: true
+        run: node scripts/check-supabase.mjs 2>&1 | tee supabase-check.log
+
       - name: Type check
         id: typecheck
         run: set -o pipefail; npx tsc --noEmit 2>&1 | tee typecheck.log
@@ -44,7 +48,7 @@ jobs:
           set -e
           mkdir -p /tmp/preview
           if [ -d out ]; then cp -r out/. /tmp/preview/; fi
-          for f in install.log typecheck.log build.log; do [ -f "$f" ] && cp "$f" /tmp/preview/ || true; done
+          for f in install.log typecheck.log build.log supabase-check.log; do [ -f "$f" ] && cp "$f" /tmp/preview/ || true; done
           {
             echo "commit: $GITHUB_SHA"
             echo "typecheck: ${{ steps.typecheck.outcome }}"
