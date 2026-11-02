@@ -1,7 +1,8 @@
 // Prepares the static export for the test link (not used for production hosting):
 //  1. absolute asset paths (/_next/...) become relative, because the preview is served from a sub-path;
-//  2. the `_next` folder is renamed to `assets`, because the preview host reserves names starting with "_".
-import { existsSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync } from 'node:fs';
+//  2. the `_next` folder is renamed to `assets`, because the preview host reserves names starting with "_";
+//  3. the legacy-browser polyfills (loaded only by browsers without ES modules) are dropped: the preview host rejects them.
+import { existsSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
 
 const root = process.argv[2] || 'out';
@@ -31,6 +32,16 @@ for (const file of walk(root)) {
     const out = src
       .replace(/(["'])\/_next\/(["'])/g, `$1./${DIR}/$2`)
       .replace(/(["'])\.\/_next\/(["'])/g, `$1./${DIR}/$2`);
+    if (out !== src) writeFileSync(file, out);
+  }
+}
+
+// 3. drop legacy polyfills (<script noModule>): modern browsers never load them
+for (const file of walk(root)) {
+  if (/[\\/]polyfills-[^\\/]+\.js$/.test(file)) rmSync(file);
+  if (file.endsWith('.html')) {
+    const src = readFileSync(file, 'utf8');
+    const out = src.replace(/<script[^>]*polyfills-[^>]*><\/script>/g, '');
     if (out !== src) writeFileSync(file, out);
   }
 }
