@@ -11,7 +11,8 @@
   "dependencies": {
     "next": "^15.3.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "@fontsource/inter": "^5.1.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.0",
@@ -19,5 +20,7 @@
     "@types/react-dom": "^19.1.0",
     "typescript": "^5.8.0"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  }
 }

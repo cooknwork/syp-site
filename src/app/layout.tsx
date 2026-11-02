@@ -1,16 +1,12 @@
 import type { Metadata, Viewport } from 'next';
-import { Inter } from 'next/font/google';
+// Inter from local WOFF2 files (npm @fontsource/inter): no requests to Google, latin + cyrillic.
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
 import { content } from '@/data/seed';
 import { themeBootScript, themesCss } from '@/features/theme/themes';
 import '@/styles/globals.css';
-
-// Inter is downloaded at build time and served from our own files (local WOFF2), no external requests.
-const inter = Inter({
-  subsets: ['latin', 'cyrillic'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
-  variable: '--font-inter',
-});
 
 export const metadata: Metadata = {
   title: 'SYP',
@@ -27,7 +23,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const themes = content.themes;
   return (
-    <html lang="ru" className={inter.variable} suppressHydrationWarning>
+    <html lang="ru" suppressHydrationWarning>
       <head>
         <style id="syp-themes" dangerouslySetInnerHTML={{ __html: themesCss(themes) }} />
         <script dangerouslySetInnerHTML={{ __html: themeBootScript(themes.map((t) => t.slug)) }} />

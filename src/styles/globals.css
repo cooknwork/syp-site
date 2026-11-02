@@ -4,7 +4,7 @@
 /* Layout: fixed night city on canvas fills the viewport; CSS phone centred on desktop, full-screen below 768px.
    Single dark look by design — every colour comes from the active SYP theme, applied as variables by JS. */
 :root{
-  --font:var(--font-inter),"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
   color-scheme:dark;
 }
 /* Theme colours (--background, --accent-primary, …) come from the themes table: see src/features/theme/themes.ts */
