@@ -1,5 +1,16 @@
 -- SYP — полная установка базы для Supabase: схема + стартовые данные.
--- Запуск: Supabase → SQL Editor → New query → вставить весь файл → Run. Запускать один раз.
+-- Запуск: Supabase → SQL Editor → New query → вставить весь файл → Run.
+-- Файл можно запускать повторно: сначала он удаляет таблицы SYP и всё, что в них.
+-- Поэтому запускайте его только при первой установке, пока в админке нет контента.
+
+-- ===================== Очистка прошлой попытки =====================
+drop table if exists content_drafts, site_settings, game_settings, city_settings, home_screen, brand_content,
+  legal_documents, themes, contacts, gallery_items, gallery_albums, events, media, admin_users cascade;
+drop policy if exists storage_public_read on storage.objects;
+drop policy if exists storage_admin_write on storage.objects;
+drop function if exists is_admin() cascade;
+drop function if exists set_updated_at() cascade;
+drop type if exists publication_status, event_status, media_kind cascade;
 
 -- SYP — initial schema
 -- Public site reads only published rows. Unpublished edits of published rows live in content_drafts (admin only).
