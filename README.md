@@ -7,6 +7,7 @@
 - Архитектура и план (Этап 1): https://claude.ai/artifact/9q3ubDDXK1q2yEY4tTZv3A
 - Правовые документы, черновик: https://claude.ai/artifact/6WKzdPqq89RpQN6CLx33xc
 - Кликабельный прототип: https://claude.ai/artifact/JSsabfpTnhvPQ1R4Cfgz7h (копия — `prototype/index.html`)
+- Тестовая сборка из этого репозитория: https://claude.ai/artifact/2JfAXtACGeAf68c2PsCZK9
 
 ## Стек
 
@@ -22,7 +23,26 @@ supabase/seed.sql     стартовые данные: 5 тем, SLAY AND PLAY, 
 docs/logo.svg         логотип SYP
 ```
 
-Код Next.js-приложения появляется на Этапе 2.
+```text
+src/app/              страница и layout (шрифт Inter, темы до первой отрисовки)
+src/data/             типы (как в БД) и стартовые данные; на Этапе 5 заменяются запросами к базе
+src/features/city/    движок города на canvas: слои, люди, машины, билборды
+src/features/phone/   телефон: статус-бар, домашний экран, Dock
+src/features/window/  универсальное окно приложения
+src/features/apps/    приложения SYP, Мероприятия, Билеты, Галерея, Настройки, Сообщения, документы
+src/features/game/    игра SYP Run в городе
+src/features/theme/   система тем (CSS-переменные из таблицы тем)
+src/styles/           глобальные стили
+scripts/              подготовка сборки для тестовой ссылки
+```
+
+## Сборка и тестовая ссылка
+
+Каждый push в `main` собирается в GitHub Actions (`.github/workflows/preview.yml`): проверка типов, `next build`
+(статический экспорт), затем результат — или лог ошибки — кладётся в ветку `preview` (см. `STATUS.txt` там).
+Из ветки `preview` сборка публикуется тестовой ссылкой в Claude. Vercel и другие аккаунты не нужны.
+
+Локально: `npm install && npm run dev`.
 
 ## База данных
 
