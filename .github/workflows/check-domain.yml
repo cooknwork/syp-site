@@ -1,0 +1,29 @@
+name: Check domain
+
+# Manual check of the site's domain: DNS records, HTTPS and what the site answers.
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: Domain
+        default: soup.moscow
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: DNS and HTTPS
+        env:
+          D: ${{ inputs.domain }}
+        run: |
+          sudo apt-get install -y -qq dnsutils >/dev/null 2>&1 || true
+          echo "== NS";          dig +short NS "$D"
+          echo "== A $D";        dig +short A "$D"
+          echo "== AAAA $D";     dig +short AAAA "$D"
+          echo "== CNAME www";   dig +short CNAME "www.$D"
+          echo "== A www";       dig +short A "www.$D"
+          echo "== TXT _github-pages-challenge-cooknwork"; dig +short TXT "_github-pages-challenge-cooknwork.$D"
+          echo "== http://$D";   curl -sS -o /dev/null -m 20 -w "%{http_code} -> %{redirect_url}\n" "http://$D/" || true
+          echo "== https://$D";  curl -sS -o /dev/null -m 20 -w "%{http_code} -> %{redirect_url}\n" "https://$D/" || true
+          echo "== https://www.$D"; curl -sS -o /dev/null -m 20 -w "%{http_code} -> %{redirect_url}\n" "https://www.$D/" || true
+          echo "== title";       curl -sS -m 20 -L "https://$D/" 2>/dev/null | grep -o '<title>[^<]*</title>' | head -1 || true
