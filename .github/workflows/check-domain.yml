@@ -33,4 +33,5 @@ jobs:
           echo "== CAA";        dig +short CAA "$D"; dig +short CAA moscow
           echo "== cert names $D";   echo | openssl s_client -servername "$D" -connect "$D:443" 2>/dev/null | openssl x509 -noout -ext subjectAltName -startdate || true
           echo "== cert names www";  echo | openssl s_client -servername "www.$D" -connect "www.$D:443" 2>/dev/null | openssl x509 -noout -ext subjectAltName -startdate || true
+          echo "== meta";       curl -sS -m 20 "https://$D/" | grep -oE '<link rel="(icon|apple-touch-icon)"[^>]*>|<meta (property|name)="(og:image|og:title|og:description|description|twitter:image)[^"]*" content="[^"]*"' || true
           echo "== title";       curl -sS -m 20 -L "https://$D/" 2>/dev/null | grep -o '<title>[^<]*</title>' | head -1 || true
