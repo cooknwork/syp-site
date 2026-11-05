@@ -1,0 +1,11 @@
+200 themes (published): [{"slug":"original","name":"SYP Original"}, 
+ {"slug":"acid","name":"Acid Playground"}, 
+ {"slug":"blue","name":"Blue Hour"}, 
+ {"slug":"pink","name":"Pink Noise"}, 
+ {"slug":"heat","name":"Heatwave"}]
+200 events (published): [{"slug":"slay-and-play","title":"SLAY AND PLAY","event_status":"announce"}]
+200 contacts (visible only): []
+200 legal (published only): []
+200 content_drafts (must be empty for public): []
+200 admin_users (must be empty for public): []
+SUPABASE: OK
