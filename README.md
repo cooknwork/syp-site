@@ -4,9 +4,12 @@
 
 ## Адреса
 
-- Сайт: https://cooknwork.github.io/syp-site/
-- Админка: https://cooknwork.github.io/syp-site/admin/
-- Предпросмотр черновиков (после входа в админку): https://cooknwork.github.io/syp-site/?preview
+- Сайт: https://soup.moscow/ (www.soup.moscow и cooknwork.github.io/syp-site перенаправляют сюда)
+- Админка: https://soup.moscow/admin/
+- Предпросмотр черновиков (после входа в админку): https://soup.moscow/?preview
+
+Домен куплен в REG.RU, DNS там же: четыре A-записи `@` на 185.199.108–111.153 (GitHub Pages) и CNAME `www` → cooknwork.github.io.
+Проверка домена: Actions → Check domain → Run workflow.
 
 ## Документы
 
@@ -18,7 +21,7 @@
 ## Стек
 
 Next.js (App Router) · React · TypeScript · CSS · Supabase (PostgreSQL, Storage, Auth) · своя простая админка.
-Сборка и хостинг — GitHub Actions и GitHub Pages; хостинг для запуска (РФ) выбирается позже, код от этого не меняется.
+Сборка и хостинг — GitHub Actions и GitHub Pages на домене soup.moscow; путь сайта определяется автоматически, так что смена хостинга или домена не требует правок кода.
 Контент читается из Supabase при сборке и в браузере, поэтому опубликованное в админке видно без пересборки.
 
 ## Структура
