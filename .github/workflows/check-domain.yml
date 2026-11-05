@@ -26,4 +26,8 @@ jobs:
           echo "== http://$D";   curl -sS -o /dev/null -m 20 -w "%{http_code} -> %{redirect_url}\n" "http://$D/" || true
           echo "== https://$D";  curl -sS -o /dev/null -m 20 -w "%{http_code} -> %{redirect_url}\n" "https://$D/" || true
           echo "== https://www.$D"; curl -sS -o /dev/null -m 20 -w "%{http_code} -> %{redirect_url}\n" "https://www.$D/" || true
+          echo "== /admin/";    curl -sS -o /dev/null -m 20 -w "%{http_code}\n" "https://$D/admin/" || true
+          echo "== asset";      a=$(curl -sS -m 20 "https://$D/" | grep -o '/_next/static/[^"]*\.js' | head -1); echo "$a"; curl -sS -o /dev/null -m 20 -w "%{http_code}\n" "https://$D$a" || true
+          echo "== old address"; curl -sS -o /dev/null -m 20 -w "%{http_code} -> %{redirect_url}\n" "https://cooknwork.github.io/syp-site/" || true
+          echo "== cert";       echo | openssl s_client -servername "$D" -connect "$D:443" 2>/dev/null | openssl x509 -noout -issuer -enddate || true
           echo "== title";       curl -sS -m 20 -L "https://$D/" 2>/dev/null | grep -o '<title>[^<]*</title>' | head -1 || true
